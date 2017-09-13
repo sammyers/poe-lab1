@@ -1,7 +1,7 @@
 const int LED_PINS[] = { 11, 12, 13 };
 const int BUTTON_PIN = 10;
-const int BLINK_INTERVAL = 100;
 
+int blinkInterval = 100;
 int ledStates[] = { LOW, LOW, LOW };
 int lightMode = 0;
 int buttonState = 0;
@@ -22,6 +22,10 @@ boolean lightOn = false;
 
 int sosSignals[] = { 1, 1, 1, 0, 2, 2, 2, 0, 1, 1, 1, 3 };
 int sosSignalLength = sizeof(sosSignals) / sizeof(int);
+
+// Potentiometer ints
+const int SENSOR_PIN = A0;
+int sensorValue = 0;
 
 void incrementValue(int *value, int modulus) {
   *value = (*value + 1) % modulus;
@@ -63,7 +67,7 @@ void blinkCallback() {
 }
 
 void blink() {
-  executeIfTimeElapsed(blinkCallback, BLINK_INTERVAL, NULL);
+  executeIfTimeElapsed(blinkCallback, blinkInterval, NULL);
 }
 
 void incrementBounceState() {
@@ -82,7 +86,7 @@ void bounceCallback() {
 }
 
 void bounce() {
-  executeIfTimeElapsed(bounceCallback, BLINK_INTERVAL, NULL);
+  executeIfTimeElapsed(bounceCallback, blinkInterval, NULL);
 }
 
 void incrementMorseCodeElement(void *arrayLength) {
@@ -156,6 +160,8 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  sensorValue = analogRead(SENSOR_PIN);
+  blinkInterval = 3 * sensorValue + 100;
   int currentButtonState = digitalRead(BUTTON_PIN);
   if (buttonState != currentButtonState && currentButtonState == HIGH) {
     incrementLightMode();
